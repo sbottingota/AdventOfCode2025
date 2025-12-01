@@ -1,0 +1,4 @@
+/target
+
+# puzzle input files
+*.txt
