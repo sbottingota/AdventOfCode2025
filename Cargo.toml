@@ -2,6 +2,3 @@
 name = "year2025"
 version = "0.1.0"
 edition = "2024"
-
-[dependencies]
-memoize = "0.5.1"

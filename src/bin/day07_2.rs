@@ -1,4 +1,4 @@
-use memoize::memoize;
+use std::collections::HashMap;
 
 const INPUT_FILE: &str = "day07.txt";
 
@@ -8,8 +8,7 @@ enum Square {
     Splitter,
 }
 
-#[memoize]
-fn count_timelines(mut beam: (usize, usize), grid: Vec<Vec<Square>>) -> u64 {
+fn count_timelines(mut beam: (usize, usize), grid: Vec<Vec<Square>>, cached: &mut HashMap<(usize, usize), u64>) -> u64 {
     while grid[beam.0][beam.1] == Square::Empty {
         beam.0 += 1;
 
@@ -18,7 +17,15 @@ fn count_timelines(mut beam: (usize, usize), grid: Vec<Vec<Square>>) -> u64 {
         }
     }
 
-    count_timelines((beam.0, beam.1 - 1), grid.clone()) + count_timelines((beam.0, beam.1 + 1), grid.clone())
+    if cached.contains_key(&beam) {
+        return cached[&beam];
+    }
+
+    let timelines = count_timelines((beam.0, beam.1 - 1), grid.clone(), cached)
+        + count_timelines((beam.0, beam.1 + 1), grid.clone(), cached);
+
+    cached.insert(beam, timelines);
+    timelines
 }
 
 fn main() {
@@ -44,6 +51,6 @@ fn main() {
         grid.push(row);
     }
 
-    println!("{}", count_timelines(start, grid));
+    println!("{}", count_timelines(start, grid, &mut HashMap::new()));
 }
 
