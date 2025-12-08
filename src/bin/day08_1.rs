@@ -1,8 +1,6 @@
-use std::collections::HashSet;
-
 const INPUT_FILE: &str = "day08.txt";
 
-const N_CONNECTIONS: usize = 10;
+const N_CONNECTIONS: usize = 1000;
 
 // since if d1 < d2, d1^2 < d2^2, the square of the distance is used when comparing
 fn dist_square((x1, y1, z1): (u64, u64, u64), (x2, y2, z2): (u64, u64, u64)) -> u64 {
@@ -28,7 +26,6 @@ fn main() {
     }
 
     let mut connections: Vec<Vec<(u64, u64, u64)>> = Vec::new();
-    let mut already_connected: HashSet<[(u64, u64, u64); 2]> = HashSet::new();
 
     for _ in 0..N_CONNECTIONS {
         let mut min_box1 = (0_u64, 0_u64, 0_u64);
@@ -37,7 +34,7 @@ fn main() {
         for jbox1 in &jboxes {
             let jbox2 = jboxes
                 .iter()
-                .filter(|jbox2| jbox1 != *jbox2 && !already_connected.contains(&[*jbox1, **jbox2]) && !already_connected.contains(&[**jbox2, *jbox1]))
+                .filter(|jbox2| jbox1 != *jbox2 && !connections.iter().any(|connection| connection.contains(jbox1) && connection.contains(jbox2)))
                 .min_by_key(|pos| dist_square(**pos, *jbox1))
                 .unwrap();
 
@@ -69,10 +66,6 @@ fn main() {
         if !connected {
             connections.push(vec![min_box1, min_box2]);
         }
-
-        already_connected.insert([min_box1, min_box2]);
-
-        // jboxes1.retain(|jbox| *jbox != min_box1 && *jbox != min_box2);
     }
 
     connections.sort_by(|connection1, connection2| connection2.len().cmp(&connection1.len()));
