@@ -27,16 +27,16 @@ fn adjacency_list_from_pairs(pairs: &[[(u64, u64, u64); 2]]) -> HashMap<(u64, u6
     let mut adjacency_list: HashMap<(u64, u64, u64), Vec<(u64, u64, u64)>> = HashMap::new();
 
     for [point1, point2] in pairs {
-        if let Some(list) = adjacency_list.get_mut(&point1) {
-            list.push(point2.clone());
+        if let Some(list) = adjacency_list.get_mut(point1) {
+            list.push(*point2);
         } else {
-            adjacency_list.insert(point1.clone(), vec![point2.clone()]);
+            adjacency_list.insert(*point1, vec![*point2]);
         }
 
-        if let Some(list) = adjacency_list.get_mut(&point2) {
-            list.push(point1.clone());
+        if let Some(list) = adjacency_list.get_mut(point2) {
+            list.push(*point1);
         } else {
-            adjacency_list.insert(point2.clone(), vec![point1.clone()]);
+            adjacency_list.insert(*point2, vec![*point1]);
         }
     }
 
@@ -63,7 +63,7 @@ fn groups_from_adjacency_list(adjacency_list: &HashMap<(u64, u64, u64), Vec<(u64
                     let merged_group: Vec<_> = group1
                         .iter()
                         .cloned()
-                        .chain(group2.into_iter().filter(|point| !group1.contains(&point)).cloned())
+                        .chain(group2.iter().filter(|point| !group1.contains(point)).cloned())
                         .collect();
 
                     let new_groups: Vec<_> = groups
@@ -108,7 +108,7 @@ fn main() {
     let groups = groups_from_adjacency_list(&adjacency_list);
 
     let mut group_lens: Vec<usize> = groups.into_iter().map(|group| group.len()).collect();
-    group_lens.sort_by(|x, y| y.cmp(&x)); // sort descending
+    group_lens.sort_by(|x, y| y.cmp(x)); // sort descending
 
     // println!("{:?}", group_lens);
 
